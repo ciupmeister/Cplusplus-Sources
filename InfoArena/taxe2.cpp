@@ -1,87 +1,64 @@
-#include <iostream>
-#include <fstream> // initialize with infinit
-#include <queue>      // check n,n
-#include <utility>
-#define DMAX 105
-#define x first
-#define y second
-#define infinit 2000009
+
+#include <fstream>
+#include <queue>
+#include <algorithm>
 using namespace std;
-typedef short int si;
 
-si  mat_cartof[DMAX][DMAX], n;
-int dist[DMAX][DMAX];
+const int Nmax = 100 + 5;
+const int INF = 0x3f3f3f3f;
+const int Di[] = {-1, 0, 1, 0}, Dj[] = {0, 1, 0, -1};
 
-bool check(si i, si j)
-{
-    return (i>=1 && i<=n && j>=1 && j<=n);
-}
+ifstream cin ("taxe2.in");
+ofstream cout ("taxe2.out");
 
-void init()
-{
-    for(int i=1; i<=n; i++)
-    {
-        for(int j=1; j<=n; j++)
-            dist[i][j]=infinit;
-    }
-}
+int N, S;
+int A[Nmax][Nmax];
+int DP[Nmax][Nmax];
+queue < pair <int, int> >  Q;
 
-
-void solve()
-{
-    si di[]={-1, 0, 1, 0};
-    si dj[]={ 0,-1, 0, 1};
-    si i,j;
-    queue < pair<si, si> > q;
-    dist[1][1]=mat_cartof[1][1];
-    pair<si,si> curent;
-    q.push(make_pair(1, 1));
-
-    while(!q.empty())
-    {
-        curent=q.front();
-
-        for(int d=0; d<4; d++)
-        {
-            i=curent.x+di[d];
-            j=curent.y+dj[d];
-
-            if(check(i,j) && dist[curent.x][curent.y]+mat_cartof[i][j]< dist[i][j])
-            {
-                q.push(make_pair(i, j));
-                dist[i][j]=dist[curent.x][curent.y]+mat_cartof[i][j];
-
-            }
-
-        }
-        q.pop();
-    }
-
-}
-
-
+void Input();
+bool Ok(int i, int j);
+void BFS();
 
 int main()
 {
-    ifstream fi("taxe2.in");
-    ofstream fo("taxe2.out");
-    int S;
-    fi>>S>>n;
+    Input();
+    BFS();
+    cout << max(S - DP[N][N], -1);
+}
 
-    for(int i=1; i<=n; i++)
+void BFS()
+{
+    Q.push({1, 1});
+    DP[1][1] = A[1][1];
+
+    for (int i, j; !Q.empty(); )
     {
-        for(int j=1; j<=n; j++)
+        i = Q.front().first;
+        j = Q.front().second;
+        Q.pop();
+        for (int iv, jv, dir = 0; dir < 4; ++dir)
         {
-            fi>>mat_cartof[i][j];
+            iv = i + Di[dir];
+            jv = j + Dj[dir];
+            if (Ok(iv, jv) && DP[iv][jv] > DP[i][j] + A[iv][jv])
+            {
+                DP[iv][jv] = DP[i][j] + A[iv][jv];
+                Q.push({iv, jv});
+            }
         }
     }
+};
 
-    init();
-    solve();
-    if(S-dist[n][n]<0)
-        fo<<-1;
-    else
-        fo<<S-dist[n][n];
+void Input()
+{
+    cin >> S >> N;
+    for (int i = 1; i <= N; ++i)
+        for (int j = 1; j <= N; ++j)
+            cin >> A[i][j], DP[i][j] = INF;
+};
 
-
-}
+bool Ok(int i, int j)
+{
+    return 1 <= i && i <= N && 1 <= j && j <= N;
+};
