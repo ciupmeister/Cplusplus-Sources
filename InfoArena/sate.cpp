@@ -4,26 +4,13 @@
 #include <queue>
 
 #define INF 0x3f3f3f3f
-#define NMAX 30005
-
 using namespace std;
 ifstream fi("sate.in");
 ofstream fo("sate.out");
-
 queue<int> q;
-vector<pair<int,int> > ways[NMAX];
-int dist[NMAX];
-
-
+vector<pair<int,int> > ways[30005];
+int dist[30005];
 int n,m,X,Y;
-int GetDistance(int a,int b)
-{
-    for(auto y:ways[a])
-    {
-        if(b== y.first)
-            return y.second;
-    }
-}
 
 void lee(int d)
 {
@@ -37,8 +24,8 @@ void lee(int d)
         {
             if(dist[y.first] == INF)
             {
-                int k = dist[x] - GetDistance(x,y.first);
-                int mk = dist[x] + GetDistance(x,y.first);
+                int k = dist[x] - y.second;
+                int mk = dist[x] + y.second;
                 if(x>y.first) dist[y.first] = k;
                 else if(x<y.first) dist[y.first] = mk;
                 q.push(y.first);
@@ -66,4 +53,8 @@ int main()
         dist[i] = INF;
     lee(X);
     fo<<dist[Y];
+
+
+
+
 }
